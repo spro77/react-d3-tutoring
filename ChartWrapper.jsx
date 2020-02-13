@@ -27,25 +27,6 @@ const D3Chart = element => {
       .attr("height", HEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
       .append("g").attr("transform", `translate(${MARGIN.LEFT}, ${MARGIN.TOP})`)
 
-  const y = d3
-      .scaleLinear()
-      .domain([
-        d3.min(data, d => d.height) * .95, 
-        d3.max(data, d => d.height)
-      ])
-      .range([HEIGHT, 0]);
-
-  const x = d3
-      .scaleBand()
-      .domain(data.map(d => d.name))
-      .range([0, WIDTH])
-      .padding(0.5);
-
-  const xAxisCall = d3.axisBottom(x)
-  svg.append("g").attr("transform", `translate(0, ${HEIGHT})`).call(xAxisCall)
-
-  const yAxisCall = d3.axisLeft(y)
-  svg.append("g").call(yAxisCall)
 
   svg.append("text")
     .attr("x", WIDTH / 2)
@@ -60,16 +41,39 @@ const D3Chart = element => {
     .attr("transform", "rotate(-90)")
     .text("Heyght in cm")
   
-  const rects = svg.selectAll("rect").data(data);
 
-  rects
-      .enter()
-      .append("rect")
-      .attr("x", d => x(d.name))
-      .attr("y", d => y(d.height))
-      .attr("width", x.bandwidth)
-      .attr("height", d => HEIGHT - y(d.height))
-      .attr("fill", "gray");
+  const update = () => {
+    const y = d3
+      .scaleLinear()
+      .domain([
+        d3.min(data, d => d.height) * .95, 
+        d3.max(data, d => d.height)
+      ])
+      .range([HEIGHT, 0]);
+
+      const x = d3
+      .scaleBand()
+      .domain(data.map(d => d.name))
+      .range([0, WIDTH])
+      .padding(0.5);
+
+      const xAxisCall = d3.axisBottom(x)
+      svg.append("g").attr("transform", `translate(0, ${HEIGHT})`).call(xAxisCall)
+
+      const yAxisCall = d3.axisLeft(y)
+      svg.append("g").call(yAxisCall)
+
+      const rects = svg.selectAll("rect").data(data);
+
+      rects
+          .enter()
+          .append("rect")
+          .attr("x", d => x(d.name))
+          .attr("y", d => y(d.height))
+          .attr("width", x.bandwidth)
+          .attr("height", d => HEIGHT - y(d.height))
+          .attr("fill", "gray");
+  }
 };
 
 export default ChartWrapper;
